@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <section class="players d-flex my-4">
-            {{stopGame()}}
+            <!-- {{stopGame()}} -->
             <div class="player">
                 <h4 class="player-name text-center">YOU</h4>
                 <div class="health-bar">
@@ -21,8 +21,8 @@
         </section>
         <b-card class="mb-2 text-center d-flex">
             <div v-show="gameIsRunning === true">
-            <b-button @click="attack()" variant="danger" class="mr-2">Attack</b-button>
-            <b-button @click="specialAttack()" variant="warning" class="mr-2">Special Attack</b-button>
+            <b-button @click="[attack(),stopGame()]" variant="danger" class="mr-2">Attack</b-button>
+            <b-button @click="[specialAttack(), stopGame()]" variant="warning" class="mr-2">Special Attack</b-button>
             <b-button @click="heal()" variant="success" class="mr-2">Heal</b-button>
             <b-button @click="giveUp()" variant="primary" class="mr-2">Give up</b-button>
             </div>
@@ -31,10 +31,9 @@
             </div>
         </b-card>
         <b-card class="mb-2 text-center d-flex">
-            <div v-for="(turn,index) in turns" :key="turn">
+            <div v-for="(turn,index) in turns" :key="index">
                 <ul>
                     <li class="combat" v-bind:style="index % 2 === 0 ? style='background-color:red; color:white' : style='background-color:green;'"> 
-
                         {{turn}}
                     </li>
                 </ul>
@@ -59,16 +58,16 @@
                 this.playerHealth -= monster;
                 this.monsterHealth -= player;
 
-                this.turns.push('Monster hits player for ' + monster);
-                this.turns.push('Player hits monster for ' + player)
+                this.turns.unshift('Monster hits player for ' + monster);
+                this.turns.unshift('Player hits monster for ' + player)
             },
             heal() {
                 const monster = Math.floor(Math.random() * 6) + 5;
                 if (this.playerHealth <= 95) {
                     this.playerHealth += 10;
                     this.playerHealth -= monster;
-                    this.turns.push('Monster hits player for ' + monster);
-                    this.turns.push('Player heals  10')
+                    this.turns.unshift('Monster hits player for ' + monster);
+                    this.turns.unshift('Player heals  10')
                 }
             },
             specialAttack() {
@@ -76,8 +75,8 @@
                 const player = Math.floor(Math.random() * 5) + 10;
                 this.playerHealth -= monster;
                 this.monsterHealth -= player;
-                this.turns.push('Monster hits player for ' + monster);
-                this.turns.push('Player hits monster hard for ' + player)
+                this.turns.unshift('Monster hits player for ' + monster);
+                this.turns.unshift('Player hits monster hard for ' + player)
             },
             stopGame() {
                     if (this.monsterHealth <= 0) {
@@ -97,14 +96,12 @@
                 this.playerHealth = 100;
                 this.monsterHealth = 100;
             },
-
             giveUp() {
                 this.gameIsRunning = !this.gameIsRunning;
                 this.turns = [];
                 this.fullHp()
             }
-
-            },
+         },
     };
 </script>
 <style scoped>
@@ -114,6 +111,7 @@
     }
     .player {
         width: 50%;
+        justify-content: space-between;
     }
     .health-bar {
         position: relative;
@@ -121,6 +119,7 @@
         height: 40px;
         background-color: grey;
         text-align: center;
+      
     }
     .health {
         position: relative;
@@ -140,10 +139,10 @@
         background-color: green;
         height: 40px;
         /* width: 100%; */
-        position: absolute;
+        /* position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%); */
     }
 
     .combat {
